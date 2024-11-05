@@ -172,6 +172,20 @@ task( 'permissions:set', function () {
 
 } );
 
+desc( 'Move uploads folder to shared directory' );
+task( 'deploy:move_uploads', function () {
+	if ( run( 'if [ -d {{deploy_path}}/current/wp-content/uploads ]; then echo "true"; else echo "false"; fi' ) === 'true' ) {
+		run( 'mv {{deploy_path}}/current/wp-content/uploads {{deploy_path}}/shared/uploads' );
+	}
+} );
+
+desc( 'Move current directory to release/1' );
+task( 'deploy:move_current', function () {
+	if ( run( 'if [ ! -L {{deploy_path}}/current ]; then echo "true"; else echo "false"; fi' ) === 'true' ) {
+		run( 'mv {{deploy_path}}/current {{deploy_path}}/release/1' );
+	}
+} );
+
 $wp_tasks = [
 	'deploy:prepare',
 	'deploy:unlock',
@@ -185,6 +199,8 @@ $wp_tasks = [
 	'permissions:set',
 	'opcache:reset',
 	'core_db:update',
+	'deploy:move_current',
+	'deploy:move_uploads',
 	'deploy:unlock',
 	'cleanup',
 ];
@@ -197,6 +213,8 @@ $non_wp_tasks = [
 	'rsync',
 	'deploy:shared',
 	'deploy:symlink',
+	'deploy:move_current',
+	'deploy:move_uploads',
 	'deploy:unlock',
 	'cleanup',
 ];

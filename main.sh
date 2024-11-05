@@ -263,6 +263,14 @@ function setup_wordpress_files() {
 		echo "Cloning mu-plugins from: $MU_PLUGINS_URL"
 		git clone -q --recursive --depth=1 "$MU_PLUGINS_URL" "$MU_PLUGINS_DIR"
 	fi
+
+	# Detect if the current directory is not a symlink and move it to release/1 if it is not
+	if [[ ! -L "$HTDOCS" ]]; then
+		echo "Moving uploads folder to shared directory."
+		mv "$HTDOCS/wp-content/uploads" "$HTDOCS/shared/uploads"
+		echo "Current directory is a not a symlink. Moving to release/1."
+		mv "$HTDOCS" "$(dirname "$HTDOCS")/release/1"
+	fi
 }
 
 function deploy() {
